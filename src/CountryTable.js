@@ -1,27 +1,30 @@
 import { useEffect, useState } from 'react';
 import Table from 'react-bootstrap/Table'
+import Button from 'react-bootstrap/Button';
 import WikiAbstract from './WikiAbstract'
+import LanguageModal from './LanguageModal';
 import './Table.css';
 
 function CountryList(props) {
     const [error, setError] = useState(null);
     const [isLoaded, setIsloaded] = useState(false);
     const [countryList, setCountryList] = useState([]);
-    const [show, setShowModal] = useState(false);
+    const [showWikiInfo, setShowWikiInfo] = useState(false);
+    const [showLangInfo, setShowLangInfo] = useState(false);
     const [selectedCountry, setSelectedCountry] = useState(0);
 
-    const handleClose = () => setShowModal(false);
-    const handleShow = (countryID) => {
-        setShowModal(true);
+    const handleCloseWikiInfo = () => setShowWikiInfo(false);
+
+    const handleShowWikiInfo = (countryID) => {
+        setShowWikiInfo(true);
         setSelectedCountry(countryID);
     }
 
-    let get_lang_list = (lang_map) => {
-        var langs = []
-        for(var key in lang_map) {
-            langs.push(lang_map[key]);
-        }
-        return langs;
+    const handleCloseLangInfo = () => setShowLangInfo(false);
+
+    const handleShowLangInfo = (countryID) => {
+        setShowLangInfo(true);
+        setSelectedCountry(countryID);
     }
 
     useEffect(() => {
@@ -58,7 +61,16 @@ function CountryList(props) {
         });
         return (
             <>
-                <WikiAbstract country={countryList[selectedCountry]} show={show} handleClose={handleClose}></WikiAbstract>
+                <WikiAbstract 
+                    country={countryList[selectedCountry]} 
+                    show={showWikiInfo} 
+                    handleClose={handleCloseWikiInfo}>
+                </WikiAbstract>
+                <LanguageModal 
+                    country={countryList[selectedCountry]}
+                    show={showLangInfo}
+                    handleClose={handleCloseLangInfo}>
+                </LanguageModal>
                 <Table striped bordered hover size="sm" className="w-50 mx-auto mt-5">
                     <thead>
                         <th>Official name</th>
@@ -70,19 +82,15 @@ function CountryList(props) {
                     </thead>
                     <tbody>
                     {countryList.map((country, index) =>
-                        <tr onClick={() => handleShow(index)}>
-                            <td>{country.name.official}</td>
-                            <td>{country.capital}</td>
-                            <td>{country.region}</td>
+                        <tr>
+                            <td onClick={() => handleShowWikiInfo(index)}>{country.name.official}</td>
+                            <td onClick={() => handleShowWikiInfo(index)}>{country.capital}</td>
+                            <td onClick={() => handleShowWikiInfo(index)}>{country.region}</td>
                             <td>
-                                <ul>
-                                    {get_lang_list(country.languages).map((lang, index) => 
-                                        <li className="no-bullets" key={index}>{lang}</li>
-                                    )}
-                                </ul>
+                                <Button onClick={() => handleShowLangInfo(index)}>view</Button>
                             </td>
-                            <td>{country.population}</td>
-                            <td><img src={country.flags.png} width="65" /></td>
+                            <td>{country.population.toLocaleString('en-US')}</td>
+                            <td onClick={() => handleShowWikiInfo(index)}><img src={country.flags.png} width="65" /></td>
                         </tr>
                     )}
                     </tbody>

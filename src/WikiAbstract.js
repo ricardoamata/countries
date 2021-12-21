@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
-import Modal from 'react-bootstrap/Modal'
-import Button from 'react-bootstrap/Button'
+import Modal from 'react-bootstrap/Modal';
+import Button from 'react-bootstrap/Button';
 
 function WikiAbsctract(props) {
     const [error, setError] = useState(null);
@@ -17,7 +17,7 @@ function WikiAbsctract(props) {
             .then(
                 (result) => {
                     setIsloaded(true);
-                    setCountryAbstract(result.extract);
+                    setCountryAbstract(result.extract_html);
                 },
                 (error) => {
                     setIsloaded(true);
@@ -35,13 +35,14 @@ function WikiAbsctract(props) {
                 <Modal.Header>
                     <Modal.Title>{countryName}</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>{isLoaded ? countryAbstract : "Loading..."}</Modal.Body>
+                {/*This is extremely unsafe, but it was specified in the requeriments*/}
+                <Modal.Body>{isLoaded ? <div dangerouslySetInnerHTML={{__html: countryAbstract}} ></div> : "Loading..."}</Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={props.handleClose}>
                         Close
                     </Button>
                 </Modal.Footer>
-        </Modal>
+            </Modal>
         )
     }
 }
