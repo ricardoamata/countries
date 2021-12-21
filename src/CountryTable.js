@@ -1,9 +1,20 @@
 import { useEffect, useState } from 'react';
+import Table from 'react-bootstrap/Table'
+
+import './Table.css';
 
 function CountryList(props) {
     const [error, setError] = useState(null);
     const [isLoaded, setIsloaded] = useState(false);
     const [countryList, setCountryList] = useState([]);
+
+    let get_lang_list = (lang_map) => {
+        var langs = []
+        for(var key in lang_map) {
+            langs.push(lang_map[key]);
+        }
+        return langs
+    }
 
     useEffect(() => {
         fetch("https://restcountries.com/v3.1/all")
@@ -33,22 +44,34 @@ function CountryList(props) {
     }
     else  {
         return (
-            <table>
-                <tr>
+            <Table striped bordered hover size="sm" className="w-50 mx-auto mt-5">
+                <thead>
                     <th>Official name</th>
                     <th>Capital</th>
                     <th>Region</th>
+                    <th>Language</th>
                     <th>Population</th>
-                </tr>
-                {countryList.map(country =>
+                    <th>Flag</th>
+                </thead>
+                <tbody>
+                {countryList.map(country => 
                     <tr>
                         <td>{country.name.official}</td>
                         <td>{country.capital}</td>
                         <td>{country.region}</td>
+                        <td>
+                            <ul>
+                                {get_lang_list(country.languages).map((lang, index) => 
+                                    <li className="no-bullets" key={index}>{lang}</li>
+                                )}
+                            </ul>
+                        </td>
                         <td>{country.population}</td>
+                        <td><img src={country.flags.png} width="65" /></td>
                     </tr>
                 )}
-            </table>
+                </tbody>
+            </Table>
         );
     }
 }
