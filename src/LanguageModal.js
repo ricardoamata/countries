@@ -13,7 +13,7 @@ function LanguageModal(props) {
     }
 
     return (
-        <Modal show={props.show} onHide={props.handleClose}>
+        <Modal centered show={props.show} onHide={props.handleClose}>
             <Modal.Header>
                 <Modal.Title>{"Languages of "+countryName}</Modal.Title>
             </Modal.Header>

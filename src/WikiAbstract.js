@@ -15,7 +15,7 @@ function WikiAbsctract(props) {
         fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${countryName}`)
             .then(res => res.json())
             .then(
-                (result) => {
+    			(result) => {
                     setIsloaded(true);
                     setCountryAbstract(result.extract_html);
                 },
@@ -31,7 +31,7 @@ function WikiAbsctract(props) {
     }
     else {
         return (
-            <Modal show={props.show} onHide={props.handleClose}>
+            <Modal centered show={props.show} onHide={props.handleClose}>
                 <Modal.Header>
                     <Modal.Title>{countryName}</Modal.Title>
                 </Modal.Header>

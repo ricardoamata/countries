@@ -59,9 +59,62 @@ function CountryList(props) {
             else if (a.name.official > b.name.official) return 1;
             return 0;
         });
+
+        var queryResults = countryList;
+        console.log(props.query);
+        if(props.query !== "") {
+            var column;
+            queryResults = countryList.filter((item) => {
+                /*switch(props.filter) {
+                    case 0:
+                        if(item.name.official.toLowerCase().includes(props.query.toLowerCase()) ||
+                        item.name.common.toLowerCase().includes(props.query.toLowerCase()) )
+                            return item;
+                        break;
+                    case 1:
+                        if(item.capital != null)
+                            column = item.name.official;
+                        else return(<p>No data to display</p>);
+                        break;
+                    case 2:
+                        column = item.capital;
+                        break;
+                    case 3:
+                        column = item.region;
+                        break;
+                } */
+                
+                if(item.name.official.toLowerCase().includes(props.query.toLowerCase()))
+                    return item;
+            });
+        }
+
+        if(queryResults.length === 0) {
+            return (
+                <p>No data to display</p>
+            )
+        }
+
+        // El paginator esta implementado manualmente
+        // debido a fallas con el codigo Ligne Paginatejs,
+        // que creo que son por que no es compatible con react
+
+        var paginator = [];
+        var i;
+        for(i = 0; i < queryResults.length/10; i++) {
+            paginator.push([]);
+            for(var j = 0; j < 10; j++) {
+                if(10*i+j >= queryResults.length)
+                    break;
+                paginator[i].push(queryResults[10*i+j]);
+            }
+        }
+
+        props.setMaxPage(i);
+
         return (
             <>
-                <WikiAbstract 
+                <WikiAbstract
                     country={countryList[selectedCountry]} 
                     show={showWikiInfo} 
                     handleClose={handleCloseWikiInfo}>
@@ -71,26 +124,28 @@ function CountryList(props) {
                     show={showLangInfo}
                     handleClose={handleCloseLangInfo}>
                 </LanguageModal>
-                <Table striped bordered hover size="sm" className="w-50 mx-auto mt-5">
+                <Table striped bordered hover size="sm" className="w-75 mx-auto mt-5">
                     <thead>
-                        <th>Official name</th>
-                        <th>Capital</th>
-                        <th>Region</th>
-                        <th>Language</th>
-                        <th>Population</th>
-                        <th>Flag</th>
+                        <tr>
+                            <th>Official name</th>
+                            <th>Capital</th>
+                            <th>Region</th>
+                            <th>Language</th>
+                            <th>Population</th>
+                            <th>Flag</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    {countryList.map((country, index) =>
+                    {paginator[props.page].map((country, index) =>
                         <tr>
-                            <td onClick={() => handleShowWikiInfo(index)}>{country.name.official}</td>
-                            <td onClick={() => handleShowWikiInfo(index)}>{country.capital}</td>
-                            <td onClick={() => handleShowWikiInfo(index)}>{country.region}</td>
+                            <td onClick={() => handleShowWikiInfo(props.page*10+index)}>{country.name.official}</td>
+                            <td onClick={() => handleShowWikiInfo(props.page*10+index)}>{country.capital}</td>
+                            <td onClick={() => handleShowWikiInfo(props.page*10+index)}>{country.region}</td>
                             <td>
-                                <Button onClick={() => handleShowLangInfo(index)}>view</Button>
+                                <Button onClick={() => handleShowLangInfo(props.page*10+index)}>view</Button>
                             </td>
                             <td>{country.population.toLocaleString('en-US')}</td>
-                            <td onClick={() => handleShowWikiInfo(index)}><img src={country.flags.png} width="65" /></td>
+                            <td onClick={() => handleShowWikiInfo(props.page*10+index)}><img src={country.flags.png} height="40" /></td>
                         </tr>
                     )}
                     </tbody>
